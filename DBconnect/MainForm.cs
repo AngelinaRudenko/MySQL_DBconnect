@@ -7,16 +7,14 @@ namespace DBconnect
     public partial class MainForm : Form
     {
         MyDB db;
-        Form parent;
         bool stateEdit;
         string[] original;
 
         public MainForm(string login, string password, Form parent)
         {
             InitializeComponent();
-            this.parent = parent;
 
-            try 
+            try
             {
                 db = new MyDB(login, password);
                 List<string> databases = db.GetDatabases();
@@ -32,68 +30,28 @@ namespace DBconnect
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Неверный логин или пароль\n"+ex.Message);
+                MessageBox.Show("Неверный логин или пароль\n" + ex.Message);
                 this.Close();
             }
         }
 
         private void buttonOk_Click(object sender, EventArgs e)
         {
-            if (!stateEdit)
-            {
-                if (textBox.Text.Contains("use "))
-                {
-                    string[] query = textBox.Text.Split(' ');
-                    for (int i = 0; i < comboBoxDatabases.Items.Count; i++)
-                    {
-                        if (comboBoxDatabases.Items[i].ToString() == query[1])
-                        {
-                            comboBoxDatabases.SelectedIndex = i;
-                            break;
-                        }
-                    }
-                }
-                else if (textBox.Text.Contains("select "))
-                {
-                    string[] query = textBox.Text.Split(' ');
-                    for (int i = 0; i < query.Length; i++)
-                    {
-                        if (query[i] == "from" && query.Length > i + 1)
-                        {
-                            for (int j = 0; j < comboBoxTables.Items.Count; j++)
-                            {
-                                if (comboBoxTables.Items[j].ToString() == query[i + 1])
-                                {
-                                    comboBoxTables.SelectedIndex = j;
-                                    db.SelectTable(textBox.Text, dataGridView);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    db.NonQuery(textBox.Text);
-                    db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
-                }
-                textBox.Text = "";
-            }
-            else
+            if (buttonOk.Text == "Ок")
             {
                 try
                 {
-                    if (original == null)
+                    if (original == null) //добавить
                     {
                         string query = $"insert into {comboBoxTables.SelectedItem}(";
-                        for (int i = 1; i < dataGridView.ColumnCount; i++)
+                        for (int i = 0; i < dataGridView.ColumnCount; i++)
                         {
                             query += $"{dataGridView.Columns[i].HeaderText}, ";
                         }
-                        query = query.Remove(query.Length - 2);
-                        query += ") values (";
 
-                        for (int i = 1; i < dataGridView.ColumnCount; i++)
+                        query = query.Remove(query.Length - 2) + ") values (";
+
+                        for (int i = 0; i < dataGridView.ColumnCount; i++)
                         {
                             if (dataGridView[i, 0].Value.GetType() == typeof(string))
                             {
@@ -106,14 +64,15 @@ namespace DBconnect
                                 query += $"{value},";
                             }
                         }
-                        query = query.Remove(query.Length - 1);
-                        query += ")";
+
+                        query = query.Remove(query.Length - 1) + ")";
                         db.NonQuery(query);
                     }
-                    else
+                    else //редактировать
                     {
                         string query = $"update {comboBoxTables.SelectedItem} set ";
-                        for (int i = 1; i < dataGridView.ColumnCount; i++)
+
+                        for (int i = 0; i < dataGridView.ColumnCount; i++)
                         {
                             query += $"{dataGridView.Columns[i].HeaderText} = ";
                             if (dataGridView[i, 0].Value.GetType() == typeof(string))
@@ -127,6 +86,7 @@ namespace DBconnect
                                 query += $"{value},";
                             }
                         }
+
                         query = query.Remove(query.Length - 1);
                         string colName = dataGridView.Columns[0].HeaderText;
                         query += $" where {colName} = {Convert.ToInt32(original[0])}";
@@ -141,10 +101,25 @@ namespace DBconnect
                 finally
                 {
                     EditState(false);
+                    db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
                 }
-                db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
+            }
+            else //поиск
+            {
+                string query = $"select * from {comboBoxTables.SelectedItem} where {comboBoxSearch.SelectedItem} = ";
+                if (textBox.Text.GetType() == typeof(string))
+                {
+
+                    db.SelectTable(query + $"'{textBox.Text}'", dataGridView, comboBoxSearch);
+                }
+                else
+                {
+                    db.SelectTable( query + $"{textBox.Text}", dataGridView, comboBoxSearch);
+                }
+                comboBoxSearch.Text = "";
             }
         }
+
 
         private void buttonReload_Click(object sender, EventArgs e)
         {
@@ -152,7 +127,7 @@ namespace DBconnect
             {
                 EditState(false);
             }
-            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
+            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
@@ -161,6 +136,7 @@ namespace DBconnect
                 "Удалить строку", MessageBoxButtons.YesNo,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button1);
+
             if (result == DialogResult.Yes)
             {
                 string query = $"delete from {comboBoxTables.SelectedItem} where ";
@@ -173,7 +149,7 @@ namespace DBconnect
                 }
                 query = query.Remove(query.Length - 5);
                 db.NonQuery(query);
-                db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
+                db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
             }
         }
 
@@ -208,38 +184,47 @@ namespace DBconnect
             buttonAdd.Visible = !state;
             buttonDelete.Visible = !state;
             buttonEdit.Visible = !state;
-            textBox.Visible = !state;
             dataGridView.ReadOnly = !state;
             if (state == true)
             {
+                buttonOk.Text = "Ок";
                 buttonReload.Text = "Отмена";
             }
             else
             {
+                buttonOk.Text = "Поиск";
                 buttonReload.Text = "Обновить";
             }
         }
 
         private void comboBoxDatabases_SelectedIndexChanged(object sender, EventArgs e)
         {
-            db.NonQuery($"use {comboBoxDatabases.SelectedItem}");
-            comboBoxTables.Items.Clear();
-            List<string> tables = db.GetTables();
-            if (tables.Count > 0)
+            try
             {
-                comboBoxTables.Items.AddRange(tables.ToArray());
-                comboBoxTables.SelectedItem = comboBoxTables.Items[0];
+                db.NonQuery($"use {comboBoxDatabases.SelectedItem}");
+                comboBoxTables.Items.Clear();
+                List<string> tables = db.GetTables();
+                if (tables.Count > 0)
+                {
+                    comboBoxTables.Items.AddRange(tables.ToArray());
+                    comboBoxTables.SelectedItem = comboBoxTables.Items[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не удалось выбрать БД\n" + ex.Message);
             }
         }
 
         private void comboBoxTables_SelectedIndexChanged(object sender, EventArgs e)
         {
-            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
+            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();            
+            Application.Exit();
         }
     }
 }
+

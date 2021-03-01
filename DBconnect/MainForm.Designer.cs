@@ -31,7 +31,6 @@ namespace DBconnect
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.dataGridView = new System.Windows.Forms.DataGridView();
-            this.textBox = new System.Windows.Forms.TextBox();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonReload = new System.Windows.Forms.Button();
             this.buttonDelete = new System.Windows.Forms.Button();
@@ -39,6 +38,8 @@ namespace DBconnect
             this.buttonEdit = new System.Windows.Forms.Button();
             this.comboBoxDatabases = new System.Windows.Forms.ComboBox();
             this.comboBoxTables = new System.Windows.Forms.ComboBox();
+            this.textBox = new System.Windows.Forms.TextBox();
+            this.comboBoxSearch = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,15 +62,6 @@ namespace DBconnect
             this.dataGridView.Size = new System.Drawing.Size(1184, 535);
             this.dataGridView.TabIndex = 0;
             // 
-            // textBox
-            // 
-            this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox.Location = new System.Drawing.Point(28, 610);
-            this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(972, 26);
-            this.textBox.TabIndex = 1;
-            // 
             // buttonOk
             // 
             this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -77,7 +69,7 @@ namespace DBconnect
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(100, 34);
             this.buttonOk.TabIndex = 2;
-            this.buttonOk.Text = "Ок";
+            this.buttonOk.Text = "Поиск";
             this.buttonOk.UseVisualStyleBackColor = true;
             this.buttonOk.Click += new System.EventHandler(this.buttonOk_Click);
             // 
@@ -143,11 +135,28 @@ namespace DBconnect
             this.comboBoxTables.TabIndex = 8;
             this.comboBoxTables.SelectedIndexChanged += new System.EventHandler(this.comboBoxTables_SelectedIndexChanged);
             // 
+            // textBox
+            // 
+            this.textBox.Location = new System.Drawing.Point(233, 614);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(182, 26);
+            this.textBox.TabIndex = 9;
+            // 
+            // comboBoxSearch
+            // 
+            this.comboBoxSearch.FormattingEnabled = true;
+            this.comboBoxSearch.Location = new System.Drawing.Point(28, 612);
+            this.comboBoxSearch.Name = "comboBoxSearch";
+            this.comboBoxSearch.Size = new System.Drawing.Size(199, 28);
+            this.comboBoxSearch.TabIndex = 10;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1247, 652);
+            this.Controls.Add(this.comboBoxSearch);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.comboBoxTables);
             this.Controls.Add(this.comboBoxDatabases);
             this.Controls.Add(this.buttonEdit);
@@ -155,7 +164,6 @@ namespace DBconnect
             this.Controls.Add(this.buttonDelete);
             this.Controls.Add(this.buttonReload);
             this.Controls.Add(this.buttonOk);
-            this.Controls.Add(this.textBox);
             this.Controls.Add(this.dataGridView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
@@ -171,7 +179,6 @@ namespace DBconnect
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridView;
-        private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonReload;
         private System.Windows.Forms.Button buttonDelete;
@@ -179,6 +186,8 @@ namespace DBconnect
         private System.Windows.Forms.Button buttonEdit;
         private System.Windows.Forms.ComboBox comboBoxDatabases;
         private System.Windows.Forms.ComboBox comboBoxTables;
+        private System.Windows.Forms.TextBox textBox;
+        private System.Windows.Forms.ComboBox comboBoxSearch;
     }
 }
 

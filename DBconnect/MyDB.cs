@@ -58,7 +58,7 @@ namespace DBconnect
             return Select("show tables");
         }
 
-        public void SelectTable(string query, DataGridView table)
+        public void SelectTable(string query, DataGridView table, ComboBox comboBox)
         {
             try
             {
@@ -67,11 +67,15 @@ namespace DBconnect
                 {
                     table.Rows.Clear();
                     table.Refresh();
+                    comboBox.Items.Clear();
+                    comboBox.Refresh();
                     table.ColumnCount = dataReader.FieldCount;
                     for (int i = 0; i < dataReader.FieldCount; i++)
                     {
                         table.Columns[i].HeaderText = dataReader.GetName(i);
+                        comboBox.Items.Add(dataReader.GetName(i));
                     }
+                    comboBox.SelectedIndex = 0;
 
                     while (dataReader.Read())
                     {
