@@ -16,7 +16,7 @@ namespace DBconnect
 
             try
             {
-                db = new MyDB(login, password);
+                db = new MyDB(login, password);                
                 List<string> databases = db.GetDatabases();
                 if (databases.Count > 0)
                 {
@@ -37,7 +37,7 @@ namespace DBconnect
 
         private void buttonOk_Click(object sender, EventArgs e)
         {
-            if (buttonOk.Text == "Ок")
+            if (buttonOk.Text == "Ок") //добавление или редактирование
             {
                 try
                 {
@@ -109,17 +109,15 @@ namespace DBconnect
                 string query = $"select * from {comboBoxTables.SelectedItem} where {comboBoxSearch.SelectedItem} = ";
                 if (textBox.Text.GetType() == typeof(string))
                 {
-
                     db.SelectTable(query + $"'{textBox.Text}'", dataGridView, comboBoxSearch);
                 }
                 else
                 {
-                    db.SelectTable( query + $"{textBox.Text}", dataGridView, comboBoxSearch);
+                    db.SelectTable(query + $"{textBox.Text}", dataGridView, comboBoxSearch);
                 }
                 comboBoxSearch.Text = "";
             }
         }
-
 
         private void buttonReload_Click(object sender, EventArgs e)
         {
@@ -207,7 +205,7 @@ namespace DBconnect
                 if (tables.Count > 0)
                 {
                     comboBoxTables.Items.AddRange(tables.ToArray());
-                    comboBoxTables.SelectedItem = comboBoxTables.Items[0];
+                    comboBoxTables.SelectedItem = comboBoxTables.Items[0];                   
                 }
             }
             catch (Exception ex)
@@ -219,6 +217,7 @@ namespace DBconnect
         private void comboBoxTables_SelectedIndexChanged(object sender, EventArgs e)
         {
             db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
+            string s = db.GetPrimaryKeyName(comboBoxDatabases.SelectedItem.ToString(), comboBoxTables.SelectedItem.ToString());
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

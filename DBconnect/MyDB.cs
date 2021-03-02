@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Windows.Forms;
 
 namespace DBconnect
@@ -64,7 +65,7 @@ namespace DBconnect
             {
                 MySqlCommand command = new MySqlCommand(query, connection);
                 using (MySqlDataReader dataReader = command.ExecuteReader())
-                {
+                {                  
                     table.Rows.Clear();
                     table.Refresh();
                     comboBox.Items.Clear();
@@ -75,7 +76,7 @@ namespace DBconnect
                         table.Columns[i].HeaderText = dataReader.GetName(i);
                         comboBox.Items.Add(dataReader.GetName(i));
                     }
-                    comboBox.SelectedIndex = 0;
+                    comboBox.SelectedIndex = 0;              
 
                     while (dataReader.Read())
                     {
@@ -129,6 +130,31 @@ namespace DBconnect
             {
                 MessageBox.Show("Не удалось выполнить запрос\n//" + ex.Message);
             }
+        }
+
+        public string GetPrimaryKeyName(string db_name, string table_name)
+        {
+            string query = $"SELECT `COLUMN_NAME` FROM `information_schema`.`COLUMNS` WHERE (`TABLE_SCHEMA` = '{db_name}') AND (`TABLE_NAME` = '{table_name}') AND (`COLUMN_KEY` = 'PRI')";
+            string result = "";
+            try
+            {
+                MySqlCommand command = new MySqlCommand(query, connection);
+                using (MySqlDataReader dataReader = command.ExecuteReader())
+                {
+                    while (dataReader.Read())
+                    {
+                        for (int i = 0; i < dataReader.FieldCount; i++)
+                        {
+                            result += dataReader[i].ToString();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не удалось выполнить запрос\n//" + ex.Message);
+            }
+            return result;
         }
     }
 }
