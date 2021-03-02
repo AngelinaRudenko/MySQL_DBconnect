@@ -1,0 +1,1 @@
+[Поиск первичного ключа таблицы](https://stackoverflow.com/questions/14929674/how-to-find-primary-keys-of-the-table-in-database-c-sharp)

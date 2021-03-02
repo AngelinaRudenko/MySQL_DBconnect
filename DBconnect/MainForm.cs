@@ -16,7 +16,7 @@ namespace DBconnect
 
             try
             {
-                db = new MyDB(login, password);                
+                db = new MyDB(login, password);
                 List<string> databases = db.GetDatabases();
                 if (databases.Count > 0)
                 {
@@ -70,26 +70,39 @@ namespace DBconnect
                     }
                     else //редактировать
                     {
+                        string primaryKey = db.GetPrimaryKeyName(comboBoxDatabases.Text, comboBoxTables.Text);
                         string query = $"update {comboBoxTables.SelectedItem} set ";
+                        string where = "";
 
                         for (int i = 0; i < dataGridView.ColumnCount; i++)
                         {
-                            query += $"{dataGridView.Columns[i].HeaderText} = ";
-                            if (dataGridView[i, 0].Value.GetType() == typeof(string))
+                            if (dataGridView.Columns[i].HeaderText.ToString() != primaryKey)
                             {
-                                string value = dataGridView[i, 0].Value.ToString();
-                                query += $"'{value}',";
+                                query += $"{dataGridView.Columns[i].HeaderText} = ";
+                                if (dataGridView[i, 0].Value.GetType() == typeof(string))
+                                {
+                                    string value = dataGridView[i, 0].Value.ToString();
+                                    query += $"'{value}',";
+                                }
+                                else
+                                {
+                                    double value = Convert.ToDouble(dataGridView[i, 0].Value.ToString());
+                                    query += $"{value},";
+                                }
                             }
                             else
                             {
-                                double value = Convert.ToDouble(dataGridView[i, 0].Value.ToString());
-                                query += $"{value},";
+                                if (dataGridView[i, 0].Value.GetType() == typeof(string))
+                                {
+                                    where = $" where {primaryKey} = '{Convert.ToInt32(original[i])}'";
+                                }
+                                else
+                                {
+                                    where = $" where {primaryKey} = {Convert.ToInt32(original[i])}";
+                                }
                             }
                         }
-
-                        query = query.Remove(query.Length - 1);
-                        string colName = dataGridView.Columns[0].HeaderText;
-                        query += $" where {colName} = {Convert.ToInt32(original[0])}";
+                        query = query.Remove(query.Length - 1) + where;
                         db.NonQuery(query);
                         Array.Clear(original, 0, original.Length);
                     }
@@ -101,19 +114,27 @@ namespace DBconnect
                 finally
                 {
                     EditState(false);
-                    db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
+                    db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
                 }
             }
             else //поиск
             {
-                string query = $"select * from {comboBoxTables.SelectedItem} where {comboBoxSearch.SelectedItem} = ";
+
+                string query = $"select * from {comboBoxTables.SelectedItem} where {comboBoxSearch.SelectedItem} ";
                 if (textBox.Text.GetType() == typeof(string))
                 {
-                    db.SelectTable(query + $"'{textBox.Text}'", dataGridView, comboBoxSearch);
+                    if (checkBoxSearch.Checked) //точне совпадение
+                    {
+                        db.SelectTable(query + $"= '{textBox.Text}'", dataGridView);
+                    }
+                    else
+                    {
+                        db.SelectTable(query + $"like '%{textBox.Text}%'", dataGridView);
+                    }
                 }
                 else
                 {
-                    db.SelectTable(query + $"{textBox.Text}", dataGridView, comboBoxSearch);
+                    db.SelectTable(query + $"= {textBox.Text}", dataGridView);
                 }
                 comboBoxSearch.Text = "";
             }
@@ -125,7 +146,8 @@ namespace DBconnect
             {
                 EditState(false);
             }
-            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
+            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
+            db.FillComboBox(comboBoxSearch, $"select * from {comboBoxTables.SelectedItem}");
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
@@ -147,7 +169,7 @@ namespace DBconnect
                 }
                 query = query.Remove(query.Length - 5);
                 db.NonQuery(query);
-                db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
+                db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
             }
         }
 
@@ -205,7 +227,15 @@ namespace DBconnect
                 if (tables.Count > 0)
                 {
                     comboBoxTables.Items.AddRange(tables.ToArray());
-                    comboBoxTables.SelectedItem = comboBoxTables.Items[0];                   
+                    comboBoxTables.SelectedItem = comboBoxTables.Items[0];
+                }
+                else
+                {
+                    dataGridView.Rows.Clear();
+                    dataGridView.Columns.Clear();
+                    dataGridView.Refresh();
+                    comboBoxSearch.Items.Clear();
+                    comboBoxSearch.Refresh();
                 }
             }
             catch (Exception ex)
@@ -216,8 +246,8 @@ namespace DBconnect
 
         private void comboBoxTables_SelectedIndexChanged(object sender, EventArgs e)
         {
-            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView, comboBoxSearch);
-            string s = db.GetPrimaryKeyName(comboBoxDatabases.SelectedItem.ToString(), comboBoxTables.SelectedItem.ToString());
+            db.SelectTable($"select * from {comboBoxTables.SelectedItem}", dataGridView);
+            db.FillComboBox(comboBoxSearch, $"select * from {comboBoxTables.SelectedItem}");
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

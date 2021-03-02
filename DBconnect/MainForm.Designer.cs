@@ -40,6 +40,7 @@ namespace DBconnect
             this.comboBoxTables = new System.Windows.Forms.ComboBox();
             this.textBox = new System.Windows.Forms.TextBox();
             this.comboBoxSearch = new System.Windows.Forms.ComboBox();
+            this.checkBoxSearch = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -119,6 +120,7 @@ namespace DBconnect
             // 
             // comboBoxDatabases
             // 
+            this.comboBoxDatabases.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxDatabases.FormattingEnabled = true;
             this.comboBoxDatabases.Location = new System.Drawing.Point(28, 25);
             this.comboBoxDatabases.Name = "comboBoxDatabases";
@@ -128,6 +130,7 @@ namespace DBconnect
             // 
             // comboBoxTables
             // 
+            this.comboBoxTables.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxTables.FormattingEnabled = true;
             this.comboBoxTables.Location = new System.Drawing.Point(233, 25);
             this.comboBoxTables.Name = "comboBoxTables";
@@ -137,24 +140,41 @@ namespace DBconnect
             // 
             // textBox
             // 
-            this.textBox.Location = new System.Drawing.Point(233, 614);
+            this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox.Location = new System.Drawing.Point(233, 612);
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(182, 26);
             this.textBox.TabIndex = 9;
             // 
             // comboBoxSearch
             // 
+            this.comboBoxSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboBoxSearch.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSearch.FormattingEnabled = true;
             this.comboBoxSearch.Location = new System.Drawing.Point(28, 612);
             this.comboBoxSearch.Name = "comboBoxSearch";
             this.comboBoxSearch.Size = new System.Drawing.Size(199, 28);
             this.comboBoxSearch.TabIndex = 10;
             // 
+            // checkBoxSearch
+            // 
+            this.checkBoxSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxSearch.AutoSize = true;
+            this.checkBoxSearch.Checked = true;
+            this.checkBoxSearch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSearch.Location = new System.Drawing.Point(421, 612);
+            this.checkBoxSearch.Name = "checkBoxSearch";
+            this.checkBoxSearch.Size = new System.Drawing.Size(184, 24);
+            this.checkBoxSearch.TabIndex = 11;
+            this.checkBoxSearch.Text = "Точное совпадение";
+            this.checkBoxSearch.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1247, 652);
+            this.Controls.Add(this.checkBoxSearch);
             this.Controls.Add(this.comboBoxSearch);
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.comboBoxTables);
@@ -188,6 +208,7 @@ namespace DBconnect
         private System.Windows.Forms.ComboBox comboBoxTables;
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.ComboBox comboBoxSearch;
+        private System.Windows.Forms.CheckBox checkBoxSearch;
     }
 }
 
